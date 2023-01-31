@@ -1,0 +1,42 @@
+{
+  "name" : "users-to-migrations-sales",
+  "description" : "",
+  "role" : "arn:aws:iam::363523520306:role/glue_crawlers_devint_new_ventures_role",
+  "executionProperty" : {
+    "maxConcurrentRuns" : 1
+  },
+  "command" : {
+    "name" : "glueetl",
+    "scriptLocation" : "s3://aws-glue-assets-363523520306-us-east-2/scripts/users-to-migrations.py",
+    "pythonVersion" : "3"
+  },
+  "defaultArguments" : {
+    "--enable-metrics" : "true",
+    "--enable-spark-ui" : "true",
+    "--spark-event-logs-path" : "s3://aws-glue-assets-363523520306-us-east-2/sparkHistoryLogs/",
+    "--enable-job-insights" : "true",
+    "--enable-glue-datacatalog" : "true",
+    "--enable-continuous-cloudwatch-log" : "true",
+    "--job-bookmark-option" : "job-bookmark-disable",
+    "--job-language" : "python",
+    "--TempDir" : "s3://aws-glue-assets-363523520306-us-east-2/temporary/"
+  },
+  "connections" : {
+    "connections" : [ "pocglue" ]
+  },
+  "maxRetries" : 3,
+  "allocatedCapacity" : 10,
+  "timeout" : 2880,
+  "maxCapacity" : 10.0,
+  "glueVersion" : "3.0",
+  "numberOfWorkers" : 10,
+  "workerType" : "G.1X",
+  "executionClass" : "STANDARD",
+  "codeGenConfigurationNodes" : "{\"node-1675177958842\":{\"SparkSQL\":{\"Inputs\":[\"node-1675176928279\"],\"Name\":\"SQL Query\",\"OutputSchemas\":[{\"Columns\":[{\"Name\":\"name\",\"Type\":\"string\"},{\"Name\":\"id\",\"Type\":\"decimal(10,2)\"},{\"Name\":\"cont\",\"Type\":\"decimal(10,2)\"},{\"Name\":\"total\",\"Type\":\"decimal(10,2)\"}]}],\"SqlAliases\":[{\"Alias\":\"myDataSource\",\"From\":\"node-1675176928279\"}],\"SqlQuery\":\"select user_id id, name, count(id) + 0.1 cont, sum(value) total from myDataSource\\ngroup by user_id, name\\n\"}},\"node-1675176897552\":{\"Join\":{\"Columns\":[{\"From\":\"node-1675174752108\",\"Keys\":[[\"id\"]]},{\"From\":\"node-1675176865899\",\"Keys\":[[\"user_id\"]]}],\"Inputs\":[\"node-1675174752108\",\"node-1675176865899\"],\"JoinType\":\"equijoin\",\"Name\":\"Join\"}},\"node-1675174752108\":{\"CatalogSource\":{\"Database\":\"postgres-s3-glue-vai\",\"Name\":\"AWS Glue Data Catalog\",\"Table\":\"postgres_public_users\"}},\"node-1675178173646\":{\"CatalogTarget\":{\"Database\":\"postgres-users_migrations\",\"Inputs\":[\"node-1675178089128\"],\"Name\":\"AWS Glue Data Catalog\",\"Table\":\"postgres_public_vendas\"}},\"node-1675178089128\":{\"ApplyMapping\":{\"Inputs\":[\"node-1675177958842\"],\"Mapping\":[{\"Dropped\":false,\"FromPath\":[\"cont\"],\"FromType\":\"decimal\",\"ToKey\":\"sale_id\",\"ToType\":\"decimal\"},{\"Dropped\":false,\"FromPath\":[\"name\"],\"FromType\":\"string\",\"ToKey\":\"name\",\"ToType\":\"string\"},{\"Dropped\":false,\"FromPath\":[\"id\"],\"FromType\":\"decimal\",\"ToKey\":\"id\",\"ToType\":\"decimal\"},{\"Dropped\":false,\"FromPath\":[\"total\"],\"FromType\":\"decimal\",\"ToKey\":\"value\",\"ToType\":\"decimal\"}],\"Name\":\"Change Schema (Apply Mapping)\"}},\"node-1675176928279\":{\"ApplyMapping\":{\"Inputs\":[\"node-1675176897552\"],\"Mapping\":[{\"Dropped\":false,\"FromPath\":[\"name\"],\"FromType\":\"string\",\"ToKey\":\"name\",\"ToType\":\"string\"},{\"Dropped\":false,\"FromPath\":[\"id\"],\"FromType\":\"decimal\",\"ToKey\":\"id\",\"ToType\":\"decimal\"},{\"Dropped\":false,\"FromPath\":[\"user_id\"],\"FromType\":\"decimal\",\"ToKey\":\"user_id\",\"ToType\":\"decimal\"},{\"Dropped\":false,\"FromPath\":[\".id\"],\"FromType\":\"decimal\",\"ToKey\":\"sale_id\",\"ToType\":\"decimal\"},{\"Dropped\":false,\"FromPath\":[\"value\"],\"FromType\":\"decimal\",\"ToKey\":\"value\",\"ToType\":\"decimal\"}],\"Name\":\"Change Schema (Apply Mapping)\"}},\"node-1675176865899\":{\"CatalogSource\":{\"Database\":\"postgres-s3-glue-vai\",\"Name\":\"AWS Glue Data Catalog\",\"Table\":\"postgres_public_sales\"}}}",
+  "sourceControlDetails" : {
+    "provider" : "GITHUB",
+    "repository" : "aws_glue",
+    "branch" : "main",
+    "folder" : "users-to-migrations-sales"
+  }
+}
